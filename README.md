@@ -41,11 +41,39 @@ El flujo principal es:
 
 
 ## Tipo de arquitectura
-...
+
+La arquitectura seleccionada es **Cliente–Servidor**.
+
+- **Cliente:** aplicación web utilizada por los usuarios desde un navegador.
+- **Servidor:** recibe las solicitudes, procesa la lógica del negocio y administra el acceso a la información.
+- **Base de datos:** centralizada y compartida por los módulos del servidor.
+
+Esta arquitectura fue seleccionada porque el proyecto corresponde a un comercio electrónico de una pizzería local con una cantidad moderada de usuarios y procesos centralizados.
+
+Inicialmente se estima una cantidad de **100 a 200 clientes registrados**, además del personal de la pizzería. Aunque el sistema es pequeño, debe permitir aumentar la capacidad del servidor conforme crezcan los clientes y los pedidos.
 
 ## Base de datos
-...
 
+La arquitectura utilizará una **base de datos centralizada** que será compartida por los módulos del servidor para mantener la consistencia de la información y simplificar la administración del sistema.
+
+La información almacenada incluye:
+
+- **Usuarios:** nombres, apellidos, correo, contraseña, teléfono, dirección y rol.
+- **Roles:** nombre y descripción.
+- **Productos:** nombre, descripción, precio, estado, categoría e imagen.
+- **Categorías:** nombre, descripción y estado.
+- **Tamaños:** nombre, descripción, precio adicional y estado.
+- **Ingredientes:** nombre, descripción, unidad de medida y estado.
+- **Producto_Ingrediente:** producto, ingrediente y cantidad.
+- **Inventario:** ingrediente, cantidad disponible, cantidad mínima y estado.
+- **Pedidos:** cliente, fecha, estado, total y dirección de entrega.
+- **Detalle del pedido:** producto, cantidad, precio y subtotal.
+- **Pagos:** pedido, método de pago, monto, fecha, estado y referencia de transacción.
+
+Los datos críticos son los usuarios registrados, pedidos realizados, pagos, información de productos, inventario e historial de ventas. 
+ 
+  
+    
 ## Usuarios del sistema
 ...
 
