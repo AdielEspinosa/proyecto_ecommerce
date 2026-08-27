@@ -32,7 +32,64 @@ Estos módulos forman parte de la aplicación del servidor. No se desplegarán c
 ...
 
 ## Usuarios del sistema
-...
+### Cliente
+
+
+- Registrarse.
+- Iniciar sesión.
+- Consultar el menú.
+- Agregar productos al carrito.
+- Realizar pedidos.
+- Consultar historial de compras.
+
+
+### Operador
+
+
+- Consultar pedidos.
+- Actualizar estados.
+- Verificar disponibilidad de productos.
+- Gestionar el flujo de preparación y entrega.
+
+
+### Administrador
+
+
+- Gestionar usuarios.
+- Gestionar productos, categorías, tamaños e ingredientes.
+- Gestionar inventario.
+- Supervisar pedidos.
+- Generar reportes.
+- Administrar el sistema.
+
+
+Cada rol tiene permisos específicos para garantizar la seguridad y el correcto funcionamiento del sistema.
+
 
 ## Riesgos y fallas posibles
-...
+### Servicio de pagos
+
+
+**Consecuencia:** el pedido podría quedar sin confirmar o el cliente podría recibir información incorrecta sobre el pago.
+
+
+**Solución:** implementar reintentos, verificar nuevamente el estado de la transacción y enviar una notificación al cliente cuando el pago sea confirmado o rechazado.
+
+
+### Base de datos
+
+
+**Consecuencia:** se podría perder o dejar temporalmente inaccesible información de usuarios, pedidos, pagos, inventario e historial de ventas.
+
+
+**Solución:** contar con copias de seguridad y respaldos periódicos para poder recuperar la información.
+
+
+### Servidor principal
+
+
+**Consecuencia:** los clientes, operadores y administradores no podrían acceder temporalmente a la plataforma.
+
+
+**Solución:** realizar recuperación del servicio y disponer de mecanismos de respaldo para reducir la pérdida de información y el tiempo de interrupción.
+
