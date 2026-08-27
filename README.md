@@ -23,7 +23,22 @@ Estos módulos forman parte de la aplicación del servidor. No se desplegarán c
 
 
 ## Comunicación entre servicios
-...
+La arquitectura utiliza un modelo Cliente–Servidor. El cliente web envía solicitudes al servidor y el servidor procesa las operaciones correspondientes.
+
+
+El flujo principal es:
+
+
+1. El cliente solicita el menú al servidor.
+2. El servidor devuelve las pizzas disponibles, ingredientes, tamaños y precios.
+3. El cliente envía los productos seleccionados y la información del pedido al servidor.
+4. El módulo de **Pedidos** consulta al módulo de **Inventario** para verificar si existen suficientes ingredientes.
+5. **Inventario** informa a **Pedidos** si los productos pueden prepararse.
+6. **Pedidos** solicita a **Pagos** el procesamiento del pago.
+7. **Pagos** devuelve a **Pedidos** la confirmación o el rechazo del pago.
+8. **Pedidos** solicita a **Notificaciones** el envío de una notificación al cliente.
+9. **Notificaciones** informa al cliente que el pedido fue recibido.
+
 
 ## Tipo de arquitectura
 ...
