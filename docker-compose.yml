@@ -1,0 +1,49 @@
+services:
+  home:
+    build: ./home
+    ports:
+      - "3000:80"
+    depends_on:
+      - usuarios
+      - productos
+      - pedidos
+
+  usuarios:
+    image: nginx:alpine
+    depends_on:
+      - database 
+
+  autenticacion:
+    image: nginx:alpine
+    depends_on:
+      - database
+
+  productos:
+    image: nginx:alpine
+    depends_on:
+      - database
+
+  pedidos:
+    image: nginx:alpine
+    depends_on:
+      - productos
+      - inventario
+      - pagos
+      - database
+
+  pagos:
+    image: nginx:alpine
+
+  inventario:
+    image: nginx:alpine
+    depends_on:
+      - database
+
+  notificaciones:
+    image: nginx:alpine
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pizza_express
