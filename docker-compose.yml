@@ -10,40 +10,94 @@ services:
 
   usuarios:
     image: nginx:alpine
+    ports:
+      - "3001:80"
     depends_on:
-      - database 
+      - db_usuarios
 
-  autenticacion:
-    image: nginx:alpine
-    depends_on:
-      - database
-
-  productos:
-    image: nginx:alpine
-    depends_on:
-      - database
-
-  pedidos:
-    image: nginx:alpine
-    depends_on:
-      - productos
-      - inventario
-      - pagos
-      - database
-
-  pagos:
-    image: nginx:alpine
-
-  inventario:
-    image: nginx:alpine
-    depends_on:
-      - database
-
-  notificaciones:
-    image: nginx:alpine
-
-  database:
+  db_usuarios:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: pizza_express
+      MYSQL_DATABASE: db_usuarios
+
+  autenticacion:
+    image: nginx:alpine
+    ports:
+      - "3002:80"
+    depends_on:
+      - db_autenticacion
+
+  db_autenticacion:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_autenticacion
+
+  productos:
+    image: nginx:alpine
+    ports:
+      - "3003:80"
+    depends_on:
+      - db_productos
+
+  db_productos:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_productos
+
+  pedidos:
+    image: nginx:alpine
+    ports:
+      - "3004:80"
+    depends_on:
+      - db_pedidos
+      - productos
+      - inventario
+      - pagos
+
+  db_pedidos:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_pedidos
+
+  pagos:
+    image: nginx:alpine
+    ports:
+      - "3005:80"
+    depends_on:
+      - db_pagos
+
+  db_pagos:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_pagos
+
+  inventario:
+    image: nginx:alpine
+    ports:
+      - "3006:80"
+    depends_on:
+      - db_inventario
+
+  db_inventario:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_inventario
+
+  notificaciones:
+    image: nginx:alpine
+    ports:
+      - "3007:80"
+    depends_on:
+      - db_notificaciones
+
+  db_notificaciones:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_notificaciones
