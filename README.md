@@ -201,23 +201,23 @@ Las APIs establecen los contratos de comunicación entre el cliente, el API Gate
 
 | Servicio | Método | Endpoint | Función |
 |---|---|---|---|
-| Autenticación | POST | `/api/auth/login` | Iniciar sesión y obtener credenciales de acceso. |
-| Autenticación | POST | `/api/auth/logout` | Cerrar la sesión del usuario. |
-| Usuarios | POST | `/api/users` | Registrar un nuevo usuario. |
-| Usuarios | GET | `/api/users/{id}` | Consultar información de un usuario autorizado. |
-| Usuarios | PUT | `/api/users/{id}` | Actualizar información del usuario. |
-| Productos | GET | `/api/products` | Consultar menú, precios y disponibilidad. |
-| Productos | POST | `/api/products` | Crear un producto. |
-| Productos | PUT | `/api/products/{id}` | Actualizar información o disponibilidad. |
-| Pedidos | POST | `/api/orders` | Crear un pedido. |
-| Pedidos | GET | `/api/orders/{id}` | Consultar detalle y estado de un pedido. |
-| Pedidos | PUT | `/api/orders/{id}/status` | Actualizar el estado de un pedido. |
-| Pedidos | GET | `/api/orders/customer/{id}` | Consultar historial de pedidos del cliente. |
-| Inventario | GET | `/api/inventory/availability` | Verificar disponibilidad de ingredientes. |
-| Inventario | PUT | `/api/inventory/{id}` | Actualizar cantidades del inventario. |
-| Pagos | POST | `/api/payments` | Procesar un pago asociado a un pedido. |
-| Pagos | GET | `/api/payments/{orderId}` | Consultar el resultado de un pago. |
-| Notificaciones | POST | `/api/notifications` | Generar y enviar una notificación. |
+| Autenticación | POST | /api/autenticacion/login | Iniciar sesión y obtener credenciales de acceso. |
+| Autenticación | POST | /api/autenticacion/logout | Cerrar la sesión del usuario. |
+| Usuarios | POST | /api/usuarios | Registrar un nuevo usuario. |
+| Usuarios | GET | /api/usuarios/{id} | Consultar información de un usuario autorizado. |
+| Usuarios | PUT | /api/usuarios/{id} | Actualizar información del usuario. |
+| Productos | GET | /api/productos | Consultar menú, precios y disponibilidad. |
+| Productos | POST | /api/productos | Crear un producto. |
+| Productos | PUT | /api/productos/{id} | Actualizar información o disponibilidad. |
+| Pedidos | POST | /api/pedidos | Crear un pedido. |
+| Pedidos | GET | /api/pedidos/{id} | Consultar detalle y estado de un pedido. |
+| Pedidos | PUT | /api/pedidos/{id}/estado | Actualizar el estado de un pedido. |
+| Pedidos | GET | /api/pedidos/cliente/{id} | Consultar historial de pedidos del cliente. |
+| Inventario | GET | /api/inventario/disponibilidad | Verificar disponibilidad de ingredientes. |
+| Inventario | PUT | /api/inventario/{id} | Actualizar cantidades del inventario. |
+| Pagos | POST | /api/pagos | Procesar un pago asociado a un pedido. |
+| Pagos | GET | /api/pagos/{idPedido} | Consultar el resultado de un pago. |
+| Notificaciones | POST | /api/notificaciones | Generar y enviar una notificación. |
 
 
 # Base de datos
