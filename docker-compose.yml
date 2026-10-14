@@ -22,6 +22,7 @@ services:
       MYSQL_DATABASE: db_usuarios
     ports:
       - "3308:3306"
+      
 
   autenticacion:
     image: nginx:alpine
