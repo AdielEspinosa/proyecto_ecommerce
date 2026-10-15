@@ -27,5 +27,32 @@ def buscar(id):
         return jsonify({"mensaje": "Usuario no encontrado"}), 404
     return jsonify(usuario)
 
+@app.route("/api/usuarios", methods=["POST"])
+def crear():
+    datos = request.json
+
+    conexion = conectar()
+    cursor = conexion.cursor()
+
+    sql = """
+        INSERT INTO usuarios
+        (nombre, apellidos, correo, telefono, direccion, rol)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    valores = (
+        datos["nombre"],
+        datos["apellidos"],
+        datos["correo"],
+        datos["telefono"],
+        datos["direccion"],
+        datos["rol"]
+    )
+    cursor.execute(sql, valores)
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return jsonify({"mensaje": "Usuario creado"})
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
