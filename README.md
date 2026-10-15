@@ -150,216 +150,209 @@ Flujo previsto para crear un pedido:
 3. Pedidos consulta Productos para comprobar el producto, su precio y su disponibilidad.
 4. Pedidos calcula el total y guarda el pedido en `db_pedidos`.
 5. La API devuelve el resultado de la operación.
+## 9. Bases de datos
 
-# Base de datos
+Cada servicio administra su propia base de datos MySQL y no debe acceder directamente a las tablas de los otros servicios.
 
-La arquitectura utiliza el principio de **base de datos por servicio**. Cada microservicio mantiene la información que le corresponde y los demás servicios no deben acceder directamente a sus tablas.
+| Servicio | Base configurada en Compose | Tabla principal | Campos principales |
+|---|---|---|---|
+| Usuarios | `db_usuarios` | `usuarios` | `id`, `nombre`, `apellidos`, `correo`, `telefono`, `direccion`, `rol`. |
+| Productos | `db_productos` | `productos` | `id`, `nombre`, `tamanio`, `descripcion`, `precio`, `disponible`. |
+| Pedidos | `db_pedidos` | `pedidos` | `id`, `cliente_id`, `producto_id`, `cantidad`, `direccion`, `total`, `fecha`, `estado`. |
 
-La comunicación con los datos de otro servicio debe realizarse mediante su API.
+Los scripts SQL del repositorio se encuentran en `bases_datos/`:
 
-| Servicio | Base de datos | Información principal |
+- `db_usuarios.sql`
+- `db_productos.sql`
+- `db_pedidos.sql`
+
+### Persistencia con Docker
+
+En `docker-compose.yml` se definen los volúmenes nombrados `db_usuarios`, `db_productos` y `db_pedidos`, montados en `/var/lib/mysql`. Estos volúmenes permiten conservar los datos al eliminar y volver a crear los contenedores, siempre que no se eliminen también los volúmenes.
+
+## 10. Variables de entorno
+
+Los servicios leen los parámetros de conexión desde archivos `.env`, cargados por Docker Compose con `env_file`.
+
+### Usuarios — `servicios/usuarios/.env`
+
+| Variable | Uso | Valor actual |
 |---|---|---|
-| Usuarios | `db_usuarios` | Usuarios y roles |
-| Autenticación | `db_autenticacion` | Datos relacionados con autenticación |
-| Productos | `db_productos` | Productos, categorías, tamaños e ingredientes |
-| Pedidos | `db_pedidos` | Pedidos y detalles |
-| Pagos | `db_pagos` | Pagos y transacciones |
-| Inventario | `db_inventario` | Ingredientes y existencias |
-| Notificaciones | Por definir | Notificaciones y estado de envío |
+| `DB_HOST` | Nombre del contenedor de base de datos en la red Compose. | `db_usuarios` |
+| `DB_PORT` | Puerto interno de MySQL. | `3306` |
+| `DB_USER` | Usuario de conexión. | `root` |
+| `DB_PASSWORD` | Contraseña de conexión. | `root` |
+| `DB_NAME` | Base de datos. | `db_usuarios` |
 
-### Información almacenada
+### Productos — `servicios/productos/.env`
 
-- **Usuarios:** nombres, apellidos, correo, contraseña, teléfono, dirección y rol.
-- **Roles:** nombre y descripción.
-- **Productos:** nombre, descripción, precio, estado, categoría e imagen.
-- **Categorías:** nombre, descripción y estado.
-- **Tamaños:** nombre, descripción, precio adicional y estado.
-- **Ingredientes:** nombre, descripción, unidad de medida y estado.
-- **Producto_Ingrediente:** producto, ingrediente y cantidad.
-- **Inventario:** ingrediente, cantidad disponible, cantidad mínima y estado.
-- **Pedidos:** cliente, fecha, estado, total y dirección de entrega.
-- **Detalle del pedido:** producto, cantidad, precio y subtotal.
-- **Pagos:** pedido, método de pago, monto, fecha, estado y referencia de transacción.
+| Variable | Uso | Valor actual |
+|---|---|---|
+| `DB_HOST` | Host MySQL. | `db_productos` |
+| `DB_PORT` | Puerto interno de MySQL. | `3306` |
+| `DB_USER` | Usuario de conexión. | `root` |
+| `DB_PASSWORD` | Contraseña de conexión. | `root` |
+| `DB_NAME` | Base de datos. | `db_productos` |
 
-Los datos críticos son los usuarios registrados, pedidos realizados, pagos, información de productos, inventario e historial de ventas.
+### Pedidos — `servicios/pedidos/.env`
 
-### ¿Por qué se cambia la base de datos centralizada?
+| Variable | Uso | Valor actual |
+|---|---|---|
+| `DB_HOST` | Host MySQL. | `db_pedidos` |
+| `DB_PORT` | Puerto interno de MySQL. | `3306` |
+| `DB_USER` | Usuario de conexión. | `root` |
+| `DB_PASSWORD` | Contraseña de conexión. | `root` |
+| `DB_NAME` | Base de datos. | `db_pedidos` |
+| `USUARIOS_URL` | URL interna de Usuarios. | `http://usuarios:5000` |
+| `PRODUCTOS_URL` | URL interna de Productos. | `http://productos:5000` |
 
-Al utilizar microservicios, se separa la información según la responsabilidad de cada servicio. Esto evita que un microservicio dependa directamente de las tablas internas de otro.
+Los valores actuales son apropiados para un entorno académico local, no para producción. No se deben publicar contraseñas reales en un repositorio público; para una entrega pública, se recomienda usar un archivo `.env.example` y excluir los `.env` reales del control de versiones.
 
-Por ejemplo, el servicio de Pedidos no debe consultar directamente `db_productos`; debe solicitar la información mediante la API de Productos.
+## 11. Cómo ejecutar el sistema
 
+### Requisitos previos
 
-# Usuarios del sistema
+- Docker instalado.
+- Docker Compose disponible como `docker compose`.
+- Puertos locales `3000`, `3001`, `3003`, `3004`, `3303` y `3308` libres.
 
-## Cliente
+### Levantar los contenedores
 
-- Registrarse.
-- Iniciar sesión.
-- Consultar el menú.
-- Agregar productos al carrito.
-- Realizar pedidos.
-- Consultar historial de compras.
-
-## Operador
-
-- Consultar pedidos.
-- Actualizar estados.
-- Verificar disponibilidad de productos.
-- Gestionar el flujo de preparación y entrega.
-
-## Administrador
-
-- Gestionar usuarios.
-- Gestionar productos, categorías, tamaños e ingredientes.
-- Gestionar inventario.
-- Supervisar pedidos.
-- Generar reportes.
-- Administrar el sistema.
-
-Cada rol tiene permisos específicos para garantizar la seguridad y el correcto funcionamiento del sistema.
-
-
-# Riesgos y fallas posibles
-
-## Servicio de pagos
-
-**Consecuencia:** el pedido podría quedar sin confirmar o el cliente podría recibir información incorrecta sobre el pago.
-
-**Solución:** implementar reintentos, verificar nuevamente el estado de la transacción y enviar una notificación al cliente cuando el pago sea confirmado o rechazado.
-
-## Base de datos de un servicio
-
-**Consecuencia:** el servicio afectado podría quedar temporalmente sin acceso a su información.
-
-**Solución:** contar con copias de seguridad, recuperación, monitoreo y aislamiento del fallo.
-
-## Microservicio de pedidos
-
-**Consecuencia:** no se podrían crear o actualizar pedidos mientras el servicio esté fuera de funcionamiento.
-
-**Solución:** implementar recuperación del servicio, manejo de errores y persistencia segura de la información.
-
-## API Gateway
-
-**Consecuencia:** el cliente podría no acceder normalmente a los servicios.
-
-**Solución:** disponer de mecanismos de recuperación y, cuando sea necesario, disponibilidad redundante.
-
-## Servicio de notificaciones
-
-**Consecuencia:** el pedido podría procesarse, pero el cliente podría no recibir el aviso inmediatamente.
-
-**Solución:** implementar reintentos y procesamiento posterior de las notificaciones sin bloquear innecesariamente el pedido.
-
-
-
-# Docker
-
-Actualmente el proyecto utiliza Docker para contenerizar los componentes del sistema.
-
-El componente del frontend (`home`) cuenta con un Dockerfile basado en `nginx:alpine`.
-
-```dockerfile
-FROM nginx:alpine
-
-RUN rm -rf /usr/share/nginx/html/*
-
-COPY index.html /usr/share/nginx/html/index.html
-
-COPY styles.css /usr/share/nginx/html/styles.css
-
-COPY imagenes /usr/share/nginx/html/imagenes
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-El Dockerfile:
-
-1. Utiliza `nginx:alpine` como imagen base.
-2. Elimina el contenido predeterminado de `/usr/share/nginx/html`.
-3. Copia `index.html`.
-4. Copia `styles.css`.
-5. Copia la carpeta `imagenes`.
-6. Expone el puerto `80`.
-7. Ejecuta Nginx en primer plano.
-
-Los demás servicios aparecen configurados inicialmente en Docker Compose utilizando contenedores de `nginx:alpine`. Esto representa la estructura de contenerización del proyecto, pero no significa que la lógica completa de cada microservicio ya esté implementada.
-
-
-# Docker Compose
-
-Docker Compose permite levantar los diferentes componentes definidos en el proyecto.
-
-Actualmente el archivo `docker-compose.yml` contiene servicios para:
-
-- `home`
-- `usuarios`
-- `db_usuarios`
-- `autenticacion`
-- `db_autenticacion`
-- `productos`
-- `db_productos`
-- `pedidos`
-- `db_pedidos`
-- `pagos`
-- `db_pagos`
-- `inventario`
-- `db_inventario`
-
-Las bases de datos utilizan **MySQL 8.0** y cada servicio tiene una base de datos asociada dentro de la configuración actual.
-
-### Levantar el proyecto
-
-Desde la carpeta raíz ejecutar:
+Desde la carpeta raíz del repositorio, donde está `docker-compose.yml`:
 
 ```bash
 docker compose up --build
 ```
 
-Para ejecutar los servicios en segundo plano:
-
-```bash
-docker compose up --build -d
-```
-
-Para detener los contenedores:
-
-```bash
-docker compose down
-```
-
-Para consultar los contenedores activos:
+Consultar el estado:
 
 ```bash
 docker compose ps
 ```
 
-### Puertos actuales
+### Crear y consultar las bases de datos por consola
 
-| Componente | Puerto externo | Puerto interno |
-|---|---:|---:|
-| Home / Frontend | `3000` | `80` |
-| Usuarios | `3001` | `80` |
-| Autenticación | `3002` | `80` |
-| Productos | `3003` | `80` |
-| Pedidos | `3004` | `80` |
-| Pagos | `3005` | `80` |
-| Inventario | `3006` | `80` |
-| Bases de datos MySQL | No expuesto al cliente | `3306` |
+**1. Entrar al contenedor de MySQL**. Para Usuarios, ejecutar:
 
-El puerto de la base de datos no debe ser utilizado directamente por el cliente. La comunicación con los datos debe realizarse mediante el microservicio correspondiente.
+```bash
+docker compose exec db_usuarios bash
+```
 
-Los puertos indicados corresponden a la configuración actual de Docker Compose y pueden ajustarse cuando se implementen las APIs reales.
+**2. Iniciar sesión en MySQL**:
+
+```bash
+mysql -u root -p
+```
+
+Escribir la contraseña "root" configurada en el archivo `.env` cuando se solicite.
+
+**3. Crear la base de datos y seleccionarla**:
+
+```sql
+CREATE DATABASE IF NOT EXISTS db_usuarios;
+USE db_usuarios;
+```
+
+**4. Crear la tabla de Usuarios**:
+
+```sql
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) NOT NULL UNIQUE,
+    telefono VARCHAR(20),
+    direccion VARCHAR(200),
+    rol VARCHAR(50) NOT NULL
+);
+```
+
+**5. Verificar que la base de datos y la tabla se hayan creado**:
+
+```sql
+SHOW DATABASES;
+SHOW TABLES;
+DESCRIBE usuarios;
+```
+
+Para consultar los registros guardados en la tabla:
+
+```sql
+SELECT * FROM usuarios;
+```
+
+**Para Productos y Pedidos**, se sigue el mismo procedimiento. Solo cambia el nombre de la base de datos y de la tabla: `db_productos` / `productos` y `db_pedidos` / `pedidos`. Primero hay que entrar al contenedor correspondiente desde la terminal:
+
+```bash
+docker compose exec db_productos bash
+```
+
+Después, iniciar MySQL con `mysql -u root -p` y ejecutar los comandos SQL correspondientes.
+
+#### Script para crear la tabla Productos
+
+Dentro de MySQL, en la instancia de Productos:
+
+```sql
+CREATE DATABASE IF NOT EXISTS db_productos;
+USE db_productos;
+
+CREATE TABLE IF NOT EXISTS productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    tamanio VARCHAR(50) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10, 2) NOT NULL,
+    disponible BOOLEAN DEFAULT TRUE
+);
+
+SHOW TABLES;
+DESCRIBE productos;
+```
+
+#### Script para crear la tabla Pedidos
+
+Dentro de MySQL, en la instancia de Pedidos:
+
+```sql
+CREATE DATABASE IF NOT EXISTS db_pedidos;
+USE db_pedidos;
+
+CREATE TABLE IF NOT EXISTS pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(30) NOT NULL DEFAULT 'pendiente'
+);
+
+SHOW TABLES;
+DESCRIBE pedidos;
+```
+
+### Puertos publicados
+
+| Componente | Dirección local | Puerto interno |
+|---|---|---:|
+| Home / frontend | `http://localhost:3000` | `80` |
+| Usuarios | `http://localhost:3001` | `5000` |
+| Productos | `http://localhost:3003` | `5000` |
+| Pedidos | `http://localhost:3004` | `5000` |
+| MySQL Usuarios | Puerto local `3308` | `3306` |
+| MySQL Productos | Puerto local `3303` | `3306` |
 
 
-# Estado actual del proyecto
+### Detener los contenedores
 
-- **Diseñado:** arquitectura de microservicios, servicios, comunicación, APIs, bases de datos, roles y manejo de fallos.
-- **Configurado:** Dockerfile, Docker Compose, servicios, bases de datos MySQL y puertos.
-- **Implementado:** frontend inicial (Home), contenedorización y estructura inicial de los servicios.
-- **Pendiente:** implementar APIs, lógica de negocio, comunicación entre servicios, API Gateway, persistencia completa y pruebas.
- 
-s
+```bash
+docker compose down
+```
+
+Para eliminar también los volúmenes y los datos guardados (solo si se desea reiniciar toda la información):
+
+```bash
+docker compose down -v
+```
