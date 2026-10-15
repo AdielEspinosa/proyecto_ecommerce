@@ -89,5 +89,19 @@ def actualizar(id):
 
     return jsonify({"mensaje": "Usuario actualizado"})
 
+@app.route("/api/usuarios/<int:id>", methods=["DELETE"])
+def eliminar(id):
+    conexion = conectar()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
+    conexion.commit()
+    filas = cursor.rowcount
+    cursor.close()
+    conexion.close()
+    if filas == 0:
+        return jsonify({"mensaje": "Usuario no encontrado"}), 404
+    return jsonify({"mensaje": "Usuario eliminado"})
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
