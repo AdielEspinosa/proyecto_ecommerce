@@ -4,6 +4,17 @@ from database import conectar
 
 app = Flask(__name__)
 
+@app.route("/api/pedidos")
+def historial():
+    conexion = conectar()
+    cursor = conexion.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM pedidos")
+    pedidos = cursor.fetchall()
+    cursor.close()
+    conexion.close()
+    return jsonify(pedidos)
+
+
 @app.route("/api/pedidos/<int:id>")
 def buscar(id):
     conexion = conectar()
@@ -18,4 +29,8 @@ def buscar(id):
     return jsonify(pedido)
 
 if __name__ == "__main__":
+
+
     app.run(host="0.0.0.0", port=5000)
+
+
