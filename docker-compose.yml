@@ -9,9 +9,11 @@ services:
       - pedidos
 
   usuarios:
-    image: nginx:alpine
+    build: ./servicios/usuarios
     ports:
-      - "3001:80"
+      - "3001:5000"
+    env_file:
+      - ./servicios/usuarios/.env  
     depends_on:
       - db_usuarios
 
@@ -22,7 +24,8 @@ services:
       MYSQL_DATABASE: db_usuarios
     ports:
       - "3308:3306"
-      
+    volumes:
+      - db_usuarios:/var/lib/mysql  
 
   autenticacion:
     image: nginx:alpine
