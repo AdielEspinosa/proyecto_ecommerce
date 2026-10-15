@@ -83,6 +83,20 @@ def actualizar_estado(id):
     return jsonify({"mensaje": "Estado actualizado correctamente", "id": id})
 
 
+@app.route("/api/pedidos/<int:id>", methods=["DELETE"])
+def eliminar(id):
+    conexion = conectar()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM pedidos WHERE id = %s", (id,))
+    conexion.commit()
+    filas = cursor.rowcount
+    cursor.close()
+    conexion.close()
+
+    if filas == 0:
+        return jsonify({"mensaje": "Pedido no encontrado"}), 404
+    return jsonify({"mensaje": "Pedido eliminado"})
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 
