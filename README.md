@@ -44,155 +44,112 @@ Docker Compose crea una red interna para los servicios. Los contenedores pueden 
 
 La arquitectura busca separar responsabilidades, facilitar el mantenimiento y permitir que cada servicio evolucione sin tener que modificar directamente las tablas de los demás.
 
-# Servicios del sistema
+## 6. Servicios implementados
 
-| Servicio | Responsabilidad | ¿Qué información manejará? | ¿Con qué otros servicios se comunicará? |
+Los tres servicios de aplicación principales están desarrollados con Flask y conectores MySQL.
+
+| Servicio | Responsabilidad | Información que administra | Persistencia |
 |---|---|---|---|
-| **Usuarios** | Gestionar los usuarios del sistema | Nombre, apellidos, correo, teléfono, dirección y rol | Autenticación, Pedidos |
-| **Autenticación** | Gestionar el acceso al sistema | Credenciales, sesiones, tokens y permisos de acceso | Usuarios |
-| **Productos** | Gestionar el catálogo de productos | Pizzas, bebidas, tamaños, ingredientes, precios, imágenes y disponibilidad | Pedidos, Inventario |
-| **Pedidos** | Gestionar el ciclo de vida de los pedidos | Cliente, productos, cantidades, dirección, total, fecha y estado | Usuarios, Productos, Inventario, Pagos, Notificaciones |
-| **Pagos** | Gestionar y procesar los pagos | Método de pago, monto, pedido, estado y referencia de transacción | Pedidos |
-| **Inventario** | Controlar las existencias de ingredientes | Ingredientes, cantidades disponibles, cantidades mínimas y estado | Productos, Pedidos |
-| **Notificaciones** | Gestionar los avisos enviados al cliente | Destinatario, mensaje, tipo, fecha y estado de envío | Pedidos, Pagos |
+| **Usuarios** | Consultar, crear, actualizar y eliminar usuarios. | `id`, `nombre`, `apellidos`, `correo`, `telefono`, `direccion`, `rol`. | MySQL, base prevista `db_usuarios`, tabla `usuarios`. |
+| **Productos** | Administrar el catálogo de pizzas. | `id`, `nombre`, `tamanio`, `descripcion`, `precio`, `disponible`. | MySQL, base `db_productos`, tabla `productos`. |
+| **Pedidos** | Crear y consultar pedidos, actualizar su estado o dirección y eliminarlos. | `id`, `cliente_id`, `producto_id`, `cantidad`, `direccion`, `total`, `fecha`, `estado`. | MySQL, base `db_pedidos`, tabla `pedidos`. |
 
-### Estado de los servicios
+## 7. Endpoints
 
-#### Usuarios
-- **Diseñado:** registro, gestión de usuarios, roles y actualización de información.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** API y lógica de negocio funcional.
+Los siguientes endpoints están declarados en el código de `app.py`. 
 
-#### Autenticación
-- **Diseñado:** inicio de sesión, cierre de sesión y validación de acceso.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** autenticación, autorización y API funcional.
+### 7.1 Servicio Usuarios
 
-#### Productos
-- **Diseñado:** gestión de pizzas, tamaños, ingredientes, bebidas, precios y disponibilidad.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** API, lógica de catálogo y conexión funcional con la base de datos.
+Base URL local: `http://localhost:3001`
 
-#### Pedidos
-- **Diseñado:** creación, consulta, modificación y actualización del estado de los pedidos.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** API, lógica de pedidos, persistencia y comunicación con los demás servicios.
-
-#### Pagos
-- **Diseñado:** registro del método de pago, procesamiento, confirmación y resultado de la transacción.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** procesamiento real de pagos, API y comunicación funcional con Pedidos.
-
-#### Inventario
-- **Diseñado:** control de ingredientes, cantidades disponibles y validación de existencias.
-- **Configurado:** servicio y base de datos definidos en Docker Compose.
-- **Implementado:** contenedor configurado.
-- **Pendiente:** API, lógica de inventario y comunicación funcional con Pedidos y Productos.
-
-#### Notificaciones
-- **Diseñado:** avisos sobre confirmación, pago y cambios relacionados con el pedido.
-- **Configurado:** servicio contemplado dentro de la arquitectura.
-- **Implementado:** pendiente.
-- **Pendiente:** contenedor, API, lógica de notificaciones y persistencia.
-
-
-# Comunicación entre servicios
-
-Los microservicios se comunican mediante **APIs REST**, utilizando solicitudes HTTP. Cada servicio solicita información al servicio responsable de administrarla.
-
-## Relaciones de comunicación
-
-### Autenticación → Usuarios
-
-- **Quién solicita:** Autenticación.
-- **Quién responde:** Usuarios.
-- **Información intercambiada:** identificación del usuario, correo, credenciales necesarias para validar el acceso y rol.
-- **Método HTTP:** `GET` / `POST`.
-
-### Pedidos → Usuarios
-
-- **Quién solicita:** Pedidos.
-- **Quién responde:** Usuarios.
-- **Información intercambiada:** identificación del cliente, nombre, dirección y datos necesarios para asociar el pedido al usuario.
-- **Método HTTP:** `GET`.
-
-### Pedidos → Productos
-
-- **Quién solicita:** Pedidos.
-- **Quién responde:** Productos.
-- **Información intercambiada:** identificador del producto, nombre, precio, tamaño, ingredientes y disponibilidad.
-- **Método HTTP:** `GET`.
-
-### Pedidos → Inventario
-
-- **Quién solicita:** Pedidos.
-- **Quién responde:** Inventario.
-- **Información intercambiada:** ingredientes requeridos, cantidades disponibles y resultado de la validación de existencias.
-- **Método HTTP:** `GET` / `POST`.
-
-### Pedidos → Pagos
-
-- **Quién solicita:** Pedidos.
-- **Quién responde:** Pagos.
-- **Información intercambiada:** identificador del pedido, monto, método de pago y resultado de la transacción.
-- **Método HTTP:** `POST`.
-
-### Pedidos → Notificaciones
-
-- **Quién solicita:** Pedidos.
-- **Quién responde:** Notificaciones.
-- **Información intercambiada:** destinatario, tipo de notificación, mensaje e información relacionada con el pedido.
-- **Método HTTP:** `POST`.
-
-### Resumen
-
-| Solicitante | Servicio que responde | Información intercambiada | Método HTTP |
+| Método | Endpoint | Descripción | Entrada principal |
 |---|---|---|---|
-| Autenticación | Usuarios | Datos necesarios para validar identidad y rol | GET / POST |
-| Pedidos | Usuarios | Datos del cliente y dirección | GET |
-| Pedidos | Productos | Producto, precio, tamaño e ingredientes | GET |
-| Pedidos | Inventario | Existencias y disponibilidad | GET / POST |
-| Pedidos | Pagos | Pedido, monto, método y resultado del pago | POST |
-| Pedidos | Notificaciones | Destinatario, mensaje y estado del pedido | POST |
+| `GET` | `/usuarios` | Lista los usuarios. | Ninguna. |
+| `GET` | `/api/usuarios/{id}` | Consulta un usuario por ID. | ID en la URL. |
+| `POST` | `/api/usuarios` | Crea un usuario. | JSON con `nombre`, `apellidos`, `correo`, `telefono`, `direccion`, `rol`. |
+| `PUT` | `/api/usuarios/{id}` | Actualiza todos los campos del usuario. | JSON con los campos del usuario. |
+| `PATCH` | `/api/usuarios/{id}` | Actualiza parcialmente campos enviados. | JSON con los campos que se desean cambiar. |
+| `DELETE` | `/api/usuarios/{id}` | Elimina un usuario. | ID en la URL. |
 
-### Reglas de comunicación
+Ejemplo de JSON para crear un usuario:
 
-- Las solicitudes externas llegan al API Gateway.
-- Cada servicio expone únicamente operaciones relacionadas con su responsabilidad.
-- Los servicios no acceden directamente a las bases de datos de otros servicios.
-- Pedidos utiliza las APIs de Inventario y Pagos cuando el flujo de compra lo requiere.
-- Las APIs devuelven estados, resultados y errores para que el servicio solicitante pueda continuar el proceso.
+```json
+{
+  "nombre": "Laura",
+  "apellidos": "Gómez Rodríguez",
+  "correo": "laura@example.com",
+  "telefono": "3001234567",
+  "direccion": "Calle 10 # 5-20",
+  "rol": "cliente"
+}
+```
 
+### 7.2 Servicio Productos
 
-# APIs
+Base URL local: `http://localhost:3003`
 
-Las APIs establecen los contratos de comunicación entre el cliente, el API Gateway y los microservicios.
-
-| Servicio | Método | Endpoint | Función |
+| Método | Endpoint | Descripción | Entrada principal |
 |---|---|---|---|
-| Autenticación | POST | /api/autenticacion/login | Iniciar sesión y obtener credenciales de acceso. |
-| Autenticación | POST | /api/autenticacion/logout | Cerrar la sesión del usuario. |
-| Usuarios | POST | /api/usuarios | Registrar un nuevo usuario. |
-| Usuarios | GET | /api/usuarios/{id} | Consultar información de un usuario autorizado. |
-| Usuarios | PUT | /api/usuarios/{id} | Actualizar información del usuario. |
-| Productos | GET | /api/productos | Consultar menú, precios y disponibilidad. |
-| Productos | POST | /api/productos | Crear un producto. |
-| Productos | PUT | /api/productos/{id} | Actualizar información o disponibilidad. |
-| Pedidos | POST | /api/pedidos | Crear un pedido. |
-| Pedidos | GET | /api/pedidos/{id} | Consultar detalle y estado de un pedido. |
-| Pedidos | PUT | /api/pedidos/{id}/estado | Actualizar el estado de un pedido. |
-| Pedidos | GET | /api/pedidos/cliente/{id} | Consultar historial de pedidos del cliente. |
-| Inventario | GET | /api/inventario/disponibilidad | Verificar disponibilidad de ingredientes. |
-| Inventario | PUT | /api/inventario/{id} | Actualizar cantidades del inventario. |
-| Pagos | POST | /api/pagos | Procesar un pago asociado a un pedido. |
-| Pagos | GET | /api/pagos/{idPedido} | Consultar el resultado de un pago. |
-| Notificaciones | POST | /api/notificaciones | Generar y enviar una notificación. |
+| `GET` | `/productos` | Lista los productos. | Ninguna. |
+| `GET` | `/productos/{id}` | Consulta un producto por ID. | ID en la URL. |
+| `POST` | `/productos` | Crea un producto. | JSON con `nombre`, `tamanio`, `descripcion`, `precio` y, opcionalmente, `disponible`. |
+| `PUT` | `/productos/{id}` | Actualiza los datos del producto. | JSON con los campos del producto. |
+| `PATCH` | `/productos/{id}/disponibilidad` | Cambia la disponibilidad. | JSON con `disponible` booleano. |
+| `DELETE` | `/productos/{id}` | Elimina un producto. | ID en la URL. |
 
+Ejemplo de JSON para crear un producto:
+
+```json
+{
+  "nombre": "Pizza Pepperoni",
+  "tamanio": "Mediana",
+  "descripcion": "Salsa de tomate, queso mozzarella y pepperoni",
+  "precio": 12.99,
+  "disponible": true
+}
+```
+
+### 7.3 Servicio Pedidos
+
+Base URL local: `http://localhost:3004`
+
+| Método | Endpoint | Descripción | Entrada principal |
+|---|---|---|---|
+| `GET` | `/api/pedidos` | Lista los pedidos. | Ninguna. |
+| `GET` | `/api/pedidos/{id}` | Consulta un pedido por ID. | ID en la URL. |
+| `POST` | `/api/pedidos` | Crea un pedido tras consultar al cliente y al producto. | JSON con `cliente_id`, `producto_id` y `cantidad`. |
+| `PUT` | `/api/pedidos/{id}/estado` | Actualiza el estado de un pedido. | JSON con `estado`. |
+| `PATCH` | `/api/pedidos/{id}` | Actualiza la dirección del pedido. | JSON con `direccion`. |
+| `DELETE` | `/api/pedidos/{id}` | Elimina un pedido. | ID en la URL. |
+
+Ejemplo de JSON para crear un pedido:
+
+```json
+{
+  "cliente_id": 1,
+  "producto_id": 1,
+  "cantidad": 2
+}
+```
+
+La dirección se toma del usuario consultado y el total se calcula usando el precio del producto multiplicado por la cantidad.
+
+## 8. Comunicación entre servicios
+
+El servicio **Pedidos** consume las APIs de Usuarios y Productos mediante HTTP:
+
+| Servicio solicitante | Servicio consultado | Endpoint llamado | Información recibida |
+|---|---|---|---|
+| Pedidos | Usuarios | `GET /api/usuarios/{id}` | Datos del cliente, especialmente la dirección. |
+| Pedidos | Productos | `GET /productos/{id}` | Nombre, precio y disponibilidad del producto. |
+
+Flujo previsto para crear un pedido:
+
+1. El cliente envía `cliente_id`, `producto_id` y `cantidad` a `POST /api/pedidos`.
+2. Pedidos consulta al servicio Usuarios para comprobar el cliente y obtener su dirección.
+3. Pedidos consulta Productos para comprobar el producto, su precio y su disponibilidad.
+4. Pedidos calcula el total y guarda el pedido en `db_pedidos`.
+5. La API devuelve el resultado de la operación.
 
 # Base de datos
 
