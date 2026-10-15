@@ -116,3 +116,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_notificaciones
+
+volumes:
+  db_pedidos:
+  db_productos:
+  db_usuarios:      
