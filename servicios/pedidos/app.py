@@ -3,6 +3,8 @@ import requests, os
 from database import conectar
 
 app = Flask(__name__)
+usuarios_url = os.getenv("USUARIOS_URL")
+productos_url = os.getenv("PRODUCTOS_URL")
 
 @app.route("/api/pedidos")
 def historial():
