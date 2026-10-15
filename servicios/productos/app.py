@@ -91,6 +91,26 @@ def actualizarDatos(id):
 
     return jsonify({"mensaje": "Datos del producto actualizados correctamente"}),201
 
+# PATCH
+@app.route("/productos/<int:id>/disponibilidad", methods=["PATCH"])
+def actualizarDisponibilidad(id):
+    disponible = request.json["disponible"]
+
+    conexion = conectar()
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+        UPDATE productos 
+        SET disponible = %s
+        WHERE id = %s
+    """
+    cursor.execute(sql, (disponible, id))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": "Disponibilidad del producto actualizada correctamente"}),201
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
