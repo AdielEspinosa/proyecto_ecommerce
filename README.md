@@ -1,6 +1,19 @@
-# Plataforma de Comercio Electrónico Distribuida: Sistema de pedidos Online - Pizza Express
+# Pizza Express — Plataforma de pedidos en línea
 
-## Problema que resuelve
+## 1. Nombre del proyecto
+
+**E-commerce: Sistema de pedidos Online - Pizza Express**
+
+## 2. Integrantes del equipo
+
+| Integrante | Rol |
+|---|---|
+| Ricardo Vela López | Líder del proyecto |
+| Adiel Felipe Espinosa Muñoz | Encargado técnico |
+| Alejandra Yunda López | Encargada de documentación |
+| Cristian David Musse Ordoñez | Encargado de presentación |
+
+## 3. Problema que resuelve
 
 El sistema busca solucionar los problemas que se presentan en las pizzerías locales cuando los pedidos se realizan mediante llamadas telefónicas, mensajes de WhatsApp o atención presencial.
 
@@ -8,8 +21,7 @@ Estos procesos pueden provocar demoras en la atención al cliente, errores al to
 
 El sistema propone una plataforma web que permitirá gestionar de manera ordenada el proceso de compra de pizzas. Los clientes podrán registrarse y seleccionar los productos disponibles, mientras que la pizzería podrá administrar los productos y pedidos desde el sistema.
 
-
-## Objetivo
+# 4. Objetivo
 
 Desarrollar una plataforma web para gestionar los pedidos de Pizza Express mediante una arquitectura de microservicios, separando las principales funciones del sistema en servicios independientes.
 
@@ -22,53 +34,15 @@ La arquitectura busca permitir:
 - Mantener los datos organizados según la responsabilidad de cada servicio.
 - Facilitar la incorporación de nuevas funcionalidades en el futuro.
 
+## 5. Arquitectura
 
-## Integrantes y roles
+El sistema está diseñado con una arquitectura de microservicios. Cada servicio tiene una responsabilidad específica y administra sus propios datos.
 
-| Integrante | Rol |
-|---|---|
-| Ricardo Vela López | Líder del proyecto |
-| Adiel Felipe Espinosa Muñoz | Encargado Técnico |
-| Alejandra Yunda López | Encargada de Documentación |
-| Cristian David Musse Ordoñez | Encargado de Presentación |
+El diagrama visual de la arquitectura del proyecto se encuentra en la carpeta docs/arquitectura, en el archivo Arquitectura Pizzeria Express.drawio.png. Se puede consultar esa imagen para observar la distribución de los componentes y sus relaciones.
 
+Docker Compose crea una red interna para los servicios. Los contenedores pueden resolverse por el nombre del servicio. 
 
-# Arquitectura
-
-El sistema utiliza una **arquitectura de microservicios**.
-
-La aplicación se divide en servicios independientes, donde cada servicio tiene una responsabilidad específica. El cliente web interactúa con el sistema mediante APIs y las solicitudes se dirigen al servicio correspondiente.
-
-### Control de cambios de arquitectura
-
-Inicialmente se había seleccionado una arquitectura **Cliente–Servidor**, debido a que el proyecto corresponde a un comercio electrónico de una pizzería local, con una cantidad moderada de usuarios y procesos que podían centralizarse.
-
-Sin embargo, después de analizar con mayor detalle las funciones del sistema, se decidió cambiar a una **arquitectura de microservicios**. El cambio se realizó porque las principales funcionalidades del sistema pueden trabajar de manera independiente: autenticación, gestión de usuarios, productos, pedidos, pagos, inventario y notificaciones tienen responsabilidades diferentes y pueden ser separadas en servicios.
-
-Además, la nueva arquitectura permite:
-
-- Desplegar y mantener los servicios de forma independiente.
-- Escalar únicamente el servicio que lo necesite.
-- Aislar fallos para reducir el impacto sobre todo el sistema.
-- Separar la información según la responsabilidad de cada servicio.
-- Facilitar futuras modificaciones y la incorporación de nuevas funcionalidades.
-- Establecer una comunicación clara mediante APIs entre los servicios.
-
-El cambio también permite que el sistema mantenga la posibilidad de crecer aunque inicialmente se estime una cantidad de **100 a 200 clientes registrados**, además del personal de la pizzería.
-{}
-### Componentes principales
-
-- **Cliente Web:** interfaz utilizada por clientes, operadores y administradores.
-- **API Gateway:** punto de entrada propuesto para centralizar y enrutar las solicitudes hacia los microservicios.
-- **Usuarios:** administra la información y roles de los usuarios.
-- **Autenticación:** gestiona inicio y cierre de sesión y validación de acceso.
-- **Productos:** administra pizzas, bebidas, tamaños, ingredientes, precios y disponibilidad.
-- **Pedidos:** gestiona la creación, consulta y seguimiento de los pedidos.
-- **Pagos:** procesa y confirma las transacciones.
-- **Inventario:** controla las existencias de ingredientes.
-- **Notificaciones:** gestiona avisos relacionados con pedidos y pagos.
-- **Bases de datos:** cada servicio administra la información que le corresponde.
-
+La arquitectura busca separar responsabilidades, facilitar el mantenimiento y permitir que cada servicio evolucione sin tener que modificar directamente las tablas de los demás.
 
 # Servicios del sistema
 
