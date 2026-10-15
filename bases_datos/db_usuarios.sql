@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS usuarios;
+CREATE DATABASE IF NOT EXISTS db_usuarios;
 
-USE usuarios;
+USE db_usuarios;
 
 
 CREATE TABLE IF NOT EXISTS usuarios (
