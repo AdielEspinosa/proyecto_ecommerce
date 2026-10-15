@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17191f">
+  <title>Pizza Express | Centro de operaciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="Pizza Express inicio">
+        <span class="brand-mark"><img src="imagenes/logo.jpg" alt=""></span>
+        <span><strong>Pizza<span>Express</span></strong><small>Centro de operaciones</small></span>
+      </a>
+      <div class="side-label">ESPACIO DE TRABAJO</div>
+      <nav class="side-nav" aria-label="Navegación principal">
+        <a class="nav-link active" href="#overview" data-page="overview"><span class="nav-icon">⌂</span>Resumen</a>
+        <a class="nav-link" href="#usuarios" data-page="usuarios"><span class="nav-icon">♙</span>Usuarios <span class="nav-count" id="usersNavCount">—</span></a>
+        <a class="nav-link" href="#productos" data-page="productos"><span class="nav-icon">▦</span>Productos <span class="nav-count" id="productsNavCount">—</span></a>
+        <a class="nav-link" href="#pedidos" data-page="pedidos"><span class="nav-icon">▤</span>Pedidos <span class="nav-count" id="ordersNavCount">—</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="connection-card">
+          <span class="pulse-dot"></span>
+          <div><strong>Estado de plataforma</strong><small id="platformStatus">Comprobando servicios…</small></div>
+        </div>
+        <div class="sidebar-foot">PIZZA EXPRESS <span>·</span> ADMIN</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><b>/</b><strong id="crumbCurrent">Resumen</strong></div>
+        <div class="top-actions">
+          <span class="today-label" id="todayLabel"></span>
+          <button class="icon-button" id="refreshAll" title="Actualizar datos" aria-label="Actualizar datos">↻</button>
+          <div class="avatar">PE</div>
+        </div>
+      </header>
+
+      <section class="page-view active" id="page-overview">
+        <div class="welcome-row">
+          <div><p class="eyebrow">PANEL DE CONTROL</p><h1>Buen día. <span>Todo en un solo lugar.</span></h1><p class="subtitle">Supervisa tus servicios y gestiona la operación de Pizza Express.</p></div>
+          <button class="button button-primary" data-go="pedidos"><span>＋</span> Gestionar pedidos</button>
+        </div>
+        <div class="hero-banner">
+          <div class="hero-copy"><span class="hero-chip"><span class="tiny-dot"></span> OPERACIÓN EN TIEMPO REAL</span><h2>Tu negocio,<br><em>en marcha.</em></h2><p>Controla el catálogo, los clientes y cada pedido desde un panel centralizado.</p><button class="button button-light" data-go="productos">Explorar productos <span>↗</span></button></div>
+          <div class="hero-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-pizza">🍕</div><div class="float-card float-card-top"><span class="float-icon">✦</span><span><b>Pizza Express</b><small>Gestión simplificada</small></span></div><div class="float-card float-card-bottom"><span class="success-mark">✓</span><span><b>Todo conectado</b><small id="heroHealth">Consultando APIs…</small></span></div></div>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">VISTA GENERAL</p><h2>Resumen de operación</h2></div><span class="last-update" id="lastUpdated">Sin actualizar</span></div>
+        <div class="metric-grid">
+          <article class="metric-card"><div class="metric-top"><span class="metric-icon orange">▦</span><span class="metric-status" id="productsHealth">Consultando</span></div><p>Productos registrados</p><div class="metric-value" id="productsMetric">—</div><div class="metric-foot"><span class="metric-bullet orange-bg"></span><span id="productsFoot">Conectando al servicio</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-icon purple">♙</span><span class="metric-status" id="usersHealth">Consultando</span></div><p>Usuarios registrados</p><div class="metric-value" id="usersMetric">—</div><div class="metric-foot"><span class="metric-bullet purple-bg"></span><span id="usersFoot">Conectando al servicio</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-icon green">▤</span><span class="metric-status" id="ordersHealth">Consultando</span></div><p>Pedidos registrados</p><div class="metric-value" id="ordersMetric">—</div><div class="metric-foot"><span class="metric-bullet green-bg"></span><span id="ordersFoot">Conectando al servicio</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-icon blue">⌁</span><span class="metric-status" id="servicesHealth">Comprobando</span></div><p>Servicios disponibles</p><div class="metric-value"><span id="servicesMetric">—</span><small> / 3</small></div><div class="metric-foot"><span class="metric-bullet blue-bg"></span><span>Usuarios · Productos · Pedidos</span></div></article>
+        </div>
+        <div class="overview-grid">
+          <article class="panel-card service-panel"><div class="panel-heading"><div><h3>Estado de los servicios</h3><p>Disponibilidad de las APIs conectadas</p></div><button class="text-button" id="checkServices">Comprobar ↻</button></div>
+            <div class="service-list">
+              <button class="service-row" data-go="usuarios"><span class="service-symbol purple">♙</span><span class="service-info"><b>Usuarios</b><small>Clientes y perfiles</small></span><span class="service-state" id="serviceUsers"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
+              <button class="service-row" data-go="productos"><span class="service-symbol orange">▦</span><span class="service-info"><b>Productos</b><small>Catálogo y disponibilidad</small></span><span class="service-state" id="serviceProducts"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
+              <button class="service-row" data-go="pedidos"><span class="service-symbol green">▤</span><span class="service-info"><b>Pedidos</b><small>Historial y estados</small></span><span class="service-state" id="serviceOrders"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
+            </div>
+          </article>
+          <article class="panel-card quick-panel"><div class="panel-heading"><div><h3>Accesos rápidos</h3><p>Continúa con una tarea</p></div></div>
+            <button class="quick-action" data-go="usuarios"><span class="quick-icon purple">＋</span><span><b>Registrar usuario</b><small>Crear un nuevo cliente</small></span><span class="row-arrow">→</span></button>
+            <button class="quick-action" data-go="productos"><span class="quick-icon orange">＋</span><span><b>Agregar producto</b><small>Ampliar el catálogo</small></span><span class="row-arrow">→</span></button>
+            <button class="quick-action" data-go="pedidos"><span class="quick-icon green">＋</span><span><b>Crear pedido</b><small>Registrar una compra</small></span><span class="row-arrow">→</span></button>
+          </article>
+        </div>
+        <article class="panel-card recent-panel"><div class="panel-heading"><div><h3>Pedidos recientes</h3><p>Últimos pedidos reportados por el servicio</p></div><button class="text-button" data-go="pedidos">Ver todos →</button></div><div id="recentOrders" class="recent-orders"><div class="empty-state">Cargando pedidos recientes…</div></div></article>
+      </section>
+
+      <section class="page-view" id="page-usuarios">
+        <div class="page-title-row"><div><p class="eyebrow">GESTIÓN DE CLIENTES</p><h1>Usuarios</h1><p class="subtitle">Administra los perfiles y la información de tus clientes.</p></div><button class="button button-primary" id="createUser"><span>＋</span> Nuevo usuario</button></div>
+        <div class="metric-strip"><div><span class="strip-icon purple">♙</span><span><small>Total de usuarios</small><b id="userTotal">—</b></span></div><div><span class="strip-icon green">✓</span><span><small>Servicio</small><b id="userServiceStatus">Verificando</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="userLastQuery">—</b></span></div></div>
+        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3>Directorio de usuarios</h3><p>Consulta, crea, edita o elimina registros.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="usersSearch" type="search" placeholder="Buscar usuario…"></label><button class="button button-outline" id="refreshUsers">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>USUARIO</th><th>CORREO</th><th>TELÉFONO</th><th>ROL</th><th>DIRECCIÓN</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="usersTable"><tr><td colspan="6" class="table-message">Consultando usuarios…</td></tr></tbody></table></div><div class="table-footer"><span id="usersTableCount">0 registros</span><span>Los datos provienen de la API de usuarios.</span></div></div>
+      </section>
+
+      <section class="page-view" id="page-productos">
+        <div class="page-title-row"><div><p class="eyebrow">CATÁLOGO</p><h1>Productos</h1><p class="subtitle">Mantén tu menú actualizado y controla la disponibilidad.</p></div><button class="button button-primary" id="createProduct"><span>＋</span> Nuevo producto</button></div>
+        <div class="metric-strip"><div><span class="strip-icon orange">▦</span><span><small>Total de productos</small><b id="productTotal">—</b></span></div><div><span class="strip-icon green">✓</span><span><small>Disponibles</small><b id="productAvailable">—</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="productLastQuery">—</b></span></div></div>
+        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3>Catálogo de productos</h3><p>Gestiona precios, tamaños y disponibilidad.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="productsSearch" type="search" placeholder="Buscar producto…"></label><button class="button button-outline" id="refreshProducts">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>PRODUCTO</th><th>TAMAÑO</th><th>PRECIO</th><th>DISPONIBILIDAD</th><th>DESCRIPCIÓN</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="productsTable"><tr><td colspan="6" class="table-message">Consultando productos…</td></tr></tbody></table></div><div class="table-footer"><span id="productsTableCount">0 registros</span><span>Los datos provienen de la API de productos.</span></div></div>
+      </section>
+
+      <section class="page-view" id="page-pedidos">
+        <div class="page-title-row"><div><p class="eyebrow">VENTAS Y OPERACIÓN</p><h1>Pedidos</h1><p class="subtitle">Consulta el historial y gestiona los estados de cada pedido.</p></div><button class="button button-primary" id="createOrder"><span>＋</span> Nuevo pedido</button></div>
+        <div class="metric-strip"><div><span class="strip-icon green">▤</span><span><small>Total de pedidos</small><b id="orderTotal">—</b></span></div><div><span class="strip-icon orange">◷</span><span><small>Pendientes</small><b id="orderPending">—</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="orderLastQuery">—</b></span></div></div>
+        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3>Historial de pedidos</h3><p>Actualiza el estado, la dirección o elimina un pedido.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="ordersSearch" type="search" placeholder="Buscar pedido…"></label><button class="button button-outline" id="refreshOrders">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTO</th><th>CANTIDAD</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="ordersTable"><tr><td colspan="8" class="table-message">Consultando pedidos…</td></tr></tbody></table></div><div class="table-footer"><span id="ordersTableCount">0 registros</span><span>Los datos provienen de la API de pedidos.</span></div></div>
+      </section>
+      <footer class="main-footer"><span>© <span id="year"></span> Pizza Express</span><span>Panel de administración <i>·</i> Datos conectados a los servicios</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header"><div><p class="eyebrow" id="modalEyebrow">GESTIÓN</p><h2 id="modalTitle">Nuevo registro</h2><p id="modalDescription">Completa los campos solicitados.</p></div><button class="icon-button close-modal" id="closeModal" aria-label="Cerrar">×</button></div>
+      <form id="recordForm"><div class="modal-fields" id="modalFields"></div><div class="form-error" id="formError" role="alert"></div><div class="modal-actions"><button type="button" class="button button-outline" id="cancelModal">Cancelar</button><button type="submit" class="button button-primary" id="saveRecord">Guardar cambios</button></div></form>
+    </section>
+  </div>
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
