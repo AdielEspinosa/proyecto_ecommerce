@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from database import conectar
 
 app = Flask(__name__)
@@ -53,6 +53,41 @@ def crear():
     conexion.close()
     return jsonify({"mensaje": "Usuario creado"})
 
+@app.route("/api/usuarios/<int:id>", methods=["PUT"])
+def actualizar(id):
+    datos = request.json
+
+    conexion = conectar()
+    cursor = conexion.cursor()
+
+    sql = """
+        UPDATE usuarios
+        SET nombre = %s,
+            apellidos = %s,
+            correo = %s,
+            telefono = %s,
+            direccion = %s,
+            rol = %s
+        WHERE id = %s
+    """
+
+    valores = (
+        datos["nombre"],
+        datos["apellidos"],
+        datos["correo"],
+        datos["telefono"],
+        datos["direccion"],
+        datos["rol"],
+        id
+    )
+
+    cursor.execute(sql, valores)
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": "Usuario actualizado"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
