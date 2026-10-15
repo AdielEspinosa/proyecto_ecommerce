@@ -97,6 +97,28 @@ def eliminar(id):
         return jsonify({"mensaje": "Pedido no encontrado"}), 404
     return jsonify({"mensaje": "Pedido eliminado"})
 
+
+@app.route("/api/pedidos/<int:id>", methods=["PATCH"])
+def modificar(id):
+    datos = request.json
+    conexion = conectar()
+    cursor = conexion.cursor()
+    sql = """
+        UPDATE pedidos
+        SET direccion = %s
+        WHERE id = %s
+    """
+    cursor.execute(sql, (datos["direccion"], id))
+    conexion.commit()
+    if cursor.rowcount == 0:
+        cursor.close()
+        conexion.close()
+        return jsonify({"mensaje": "Pedido no encontrado"}), 404
+    cursor.close()
+    conexion.close()
+    return jsonify({"mensaje": "Dirección actualizada correctamente", "id": id})
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 
