@@ -3,6 +3,17 @@ from database import conectar
 
 app = Flask(__name__)
 
+def obtener_producto_por_id(id):
+    conexion = conectar()
+    cursor = conexion.cursor(dictionary=True)
+    sql = "SELECT * FROM productos WHERE id = %s"
+    cursor.execute(sql, (id,))
+    producto = cursor.fetchone()
+    cursor.close()
+    conexion.close()
+    
+    return producto
+
 # GET
 @app.route("/productos", methods=["GET"])
 def listar():
@@ -19,14 +30,7 @@ def listar():
 # GET ID
 @app.route("/productos/<int:id>", methods=["GET"])
 def buscar(id):
-    conexion = conectar()
-    cursor = conexion.cursor(dictionary=True)
-    sql = "SELECT * FROM productos WHERE id = %s"
-    cursor.execute(sql, (id,))
-    producto = cursor.fetchone()
-
-    cursor.close()
-    conexion.close()
+    producto = obtener_producto_por_id(id)
 
     if producto is None:
         return jsonify({"mensaje": "Producto no encontrado"}), 404
@@ -65,6 +69,9 @@ def crear():
 # PUT
 @app.route("/productos/<int:id>", methods=["PUT"])
 def actualizarDatos(id):
+    if obtener_producto_por_id(id) is None:
+        return jsonify({"mensaje": "Producto no encontrado"}), 404
+    
     datosNuevos = request.json
     conexion = conectar()
     cursor = conexion.cursor(dictionary=True)
@@ -89,11 +96,14 @@ def actualizarDatos(id):
     cursor.close()
     conexion.close()
 
-    return jsonify({"mensaje": "Datos del producto actualizados correctamente"}),201
+    return jsonify({"mensaje": "Datos del producto actualizados correctamente"}),200
 
 # PATCH
 @app.route("/productos/<int:id>/disponibilidad", methods=["PATCH"])
 def actualizarDisponibilidad(id):
+    if obtener_producto_por_id(id) is None:
+        return jsonify({"mensaje": "Producto no encontrado"}), 404
+    
     disponible = request.json["disponible"]
 
     conexion = conectar()
@@ -110,11 +120,14 @@ def actualizarDisponibilidad(id):
     cursor.close()
     conexion.close()
 
-    return jsonify({"mensaje": "Disponibilidad del producto actualizada correctamente"}),201
+    return jsonify({"mensaje": "Disponibilidad del producto actualizada correctamente"}),200
 
 # DELETE
 @app.route("/productos/<int:id>", methods=["DELETE"])
 def eliminar(id):
+    if obtener_producto_por_id(id) is None:
+        return jsonify({"mensaje": "Producto no encontrado"}), 404
+    
     conexion = conectar()
     cursor = conexion.cursor(dictionary=True)
     sql = "DELETE FROM productos WHERE id = %s"
@@ -125,7 +138,7 @@ def eliminar(id):
     cursor.close()
     conexion.close()
 
-    return jsonify({"mensaje": "Producto eliminado correctamente"}),201
+    return jsonify({"mensaje": "Producto eliminado correctamente"}),200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
