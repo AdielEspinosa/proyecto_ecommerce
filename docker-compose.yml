@@ -60,20 +60,23 @@ services:
       - db_productos:/var/lib/mysql
 
   pedidos:
-    image: nginx:alpine
+    build: ./servicios/pedidos
     ports:
-      - "3004:80"
+      - "3004:5000"
+    env_file:
+      - ./servicios/pedidos/.env
     depends_on:
       - db_pedidos
+      - usuarios
       - productos
-      - inventario
-      - pagos
 
   db_pedidos:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_pedidos
+    volumes:
+      - db_pedidos:/var/lib/mysql
 
   pagos:
     image: nginx:alpine
