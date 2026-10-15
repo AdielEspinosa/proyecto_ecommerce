@@ -14,6 +14,7 @@ def historial():
     conexion.close()
     return jsonify(pedidos)
 
+
 @app.route("/api/pedidos/<int:id>")
 def buscar(id):
     conexion = conectar()
@@ -60,6 +61,26 @@ def crear():
     conexion.close()
     return jsonify({"mensaje": "Pedido creado", "id": nuevoId, "total": total})
 
+
+@app.route("/api/pedidos/<int:id>/estado", methods=["PUT"])
+def actualizar_estado(id):
+    datos = request.json
+    conexion = conectar()
+    cursor = conexion.cursor()
+    sql = """
+        UPDATE pedidos
+        SET estado = %s
+        WHERE id = %s
+    """
+    cursor.execute(sql, (datos["estado"], id))
+    conexion.commit()
+    if cursor.rowcount == 0:
+        cursor.close()
+        conexion.close()
+        return jsonify({"mensaje": "Pedido no encontrado"}), 404
+    cursor.close()
+    conexion.close()
+    return jsonify({"mensaje": "Estado actualizado correctamente", "id": id})
 
 
 if __name__ == "__main__":
