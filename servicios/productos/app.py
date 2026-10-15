@@ -62,6 +62,35 @@ def crear():
 
     return jsonify({"mensaje": "Producto agregado correctamente", "id": nuevoId}), 201
 
+# PUT
+@app.route("/productos/<int:id>", methods=["PUT"])
+def actualizarDatos(id):
+    datosNuevos = request.json
+    conexion = conectar()
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+        UPDATE productos 
+        SET nombre = %s, tamanio = %s, descripcion = %s, precio = %s, disponible = %s
+        WHERE id = %s
+    """
+    valores = (
+        datosNuevos["nombre"],
+        datosNuevos["tamanio"],
+        datosNuevos["descripcion"],
+        datosNuevos["precio"],
+        datosNuevos["disponible"],
+        id
+    )
+
+    cursor.execute(sql, valores)
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": "Datos del producto actualizados correctamente"}),201
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
