@@ -112,5 +112,20 @@ def actualizarDisponibilidad(id):
 
     return jsonify({"mensaje": "Disponibilidad del producto actualizada correctamente"}),201
 
+# DELETE
+@app.route("/productos/<int:id>", methods=["DELETE"])
+def eliminar(id):
+    conexion = conectar()
+    cursor = conexion.cursor(dictionary=True)
+    sql = "DELETE FROM productos WHERE id = %s"
+
+    cursor.execute(sql, (id,))
+    conexion.commit()
+
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": "Producto eliminado correctamente"}),201
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
