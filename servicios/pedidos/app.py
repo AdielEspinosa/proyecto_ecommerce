@@ -33,22 +33,32 @@ def buscar(id):
 
 @app.route("/api/pedidos", methods=["POST"])
 def crear():
-    datos = request.json 
-    respuesta = requests.get(f"{usuarios_url}/api/usuarios/{datos['cliente_id']}")
-    if respuesta.status_code != 200:
-        return jsonify({"mensaje": "Cliente no encontrado"}), 404
+    datos = request.json
+    try: 
+        respuesta = requests.get(f"{usuarios_url}/api/usuarios/{datos['cliente_id']}")
+    except requests.exceptions.ConnectionError:
+        return jsonify({"mensaje": "El servicio de usuarios no está disponible"}),503
+    
+    if respuesta.status_code == 404:
+            return jsonify({"mensaje": "Cliente no encontrado"}), 404
     usuario = respuesta.json()
-   
-    respuesta = requests.get(f"{productos_url}/productos/{datos['producto_id']}")
-    if respuesta.status_code != 200:
-        return jsonify({"mensaje": "Producto no encontrado"}), 404
+    
+    try:
+        respuesta = requests.get(f"{productos_url}/productos/{datos['producto_id']}")
+    except requests.exceptions.ConnectionError:
+        return jsonify({"mensaje": "El servicio de productos no está disponible"}),503    
+    
+    if respuesta.status_code == 404:
+                return jsonify({"mensaje": "Producto no encontrado"}), 404
+    
     producto = respuesta.json()
+
     if not producto["disponible"]:
         return jsonify({"mensaje": "Producto no disponible"}), 400
+    
     total = float(producto["precio"]) * datos["cantidad"]
     conexion = conectar()
     cursor = conexion.cursor()
-
     sql = """
         INSERT INTO pedidos
         (cliente_id, producto_id, cantidad, direccion, total)
@@ -61,7 +71,7 @@ def crear():
     nuevoId = cursor.lastrowid
     cursor.close()
     conexion.close()
-    return jsonify({"mensaje": "Pedido creado", "id": nuevoId, "total": total})
+    return jsonify({"mensaje": "Pedido creado", "id": nuevoId, "total": total}),201
 
 
 @app.route("/api/pedidos/<int:id>/estado", methods=["PUT"])
