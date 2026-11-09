@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import time
 from database import conectar
 
 app = Flask(__name__)
@@ -30,6 +31,7 @@ def listar():
 # GET ID
 @app.route("/productos/<int:id>", methods=["GET"])
 def buscar(id):
+    time.sleep(10)
     producto = obtener_producto_por_id(id)
 
     if producto is None:
