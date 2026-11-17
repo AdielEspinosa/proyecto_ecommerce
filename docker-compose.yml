@@ -13,7 +13,7 @@ services:
     ports:
       - "3001:5000"
     env_file:
-      - ./servicios/usuarios/.env  
+      - ./.env  
     depends_on:
       - db_usuarios
 
@@ -45,7 +45,7 @@ services:
     ports:
       - "3003:5000"
     env_file:
-      - ./servicios/productos/.env
+      - ./.env
     depends_on:
       - db_productos
 
@@ -64,7 +64,7 @@ services:
     ports:
       - "3004:5000"
     env_file:
-      - ./servicios/pedidos/.env
+      - ./.env
     depends_on:
       - db_pedidos
       - usuarios
