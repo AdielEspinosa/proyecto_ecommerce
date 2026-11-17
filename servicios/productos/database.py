@@ -3,9 +3,9 @@ import os
 
 def conectar():
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
+        host=os.getenv("PRODUCTOS_DB_HOST"),
+        user=os.getenv("PRODUCTOS_DB_USER"),
+        password=os.getenv("PRODUCTOS_DB_PASSWORD"),
+        database=os.getenv("PRODUCTOS_DB_NAME"),
         port=int(os.getenv("DB_PORT", 3306))
     )
