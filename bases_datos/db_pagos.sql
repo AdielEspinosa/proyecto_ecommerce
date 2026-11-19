@@ -5,7 +5,6 @@ USE db_pagos;
 CREATE TABLE IF NOT EXISTS pagos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pedido_id INT NOT NULL,
-    monto DECIMAL(10,2) NOT NULL,
     metodo_pago VARCHAR(50) NOT NULL,
     estado VARCHAR(30) NOT NULL DEFAULT 'pendiente',
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP
