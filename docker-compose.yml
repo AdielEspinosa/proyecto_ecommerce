@@ -27,19 +27,6 @@ services:
     volumes:
       - db_usuarios:/var/lib/mysql  
 
-  autenticacion:
-    image: nginx:alpine
-    ports:
-      - "3002:80"
-    depends_on:
-      - db_autenticacion
-
-  db_autenticacion:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_autenticacion
-
   productos:
     build: ./servicios/productos
     ports:
@@ -92,32 +79,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_pagos
-
-  inventario:
-    image: nginx:alpine
-    ports:
-      - "3006:80"
-    depends_on:
-      - db_inventario
-
-  db_inventario:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_inventario
-
-  notificaciones:
-    image: nginx:alpine
-    ports:
-      - "3007:80"
-    depends_on:
-      - db_notificaciones
-
-  db_notificaciones:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_notificaciones
 
 volumes:
   db_pedidos:
