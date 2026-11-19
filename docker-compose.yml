@@ -4,6 +4,15 @@ services:
     ports:
       - "3000:80"
     depends_on:
+      - gateway
+
+  gateway:
+    build: ./servicios/gateway
+    ports:
+      - "3006:5000"
+    env_file:
+      - ./.env
+    depends_on:
       - usuarios
       - autenticacion
       - productos
