@@ -49,9 +49,10 @@ def crear():
     )
     cursor.execute(sql, valores)
     conexion.commit()
+    nuevo_id = cursor.lastrowid
     cursor.close()
     conexion.close()
-    return jsonify({"mensaje": "Usuario creado"})
+    return jsonify({"mensaje": "Usuario creado", "id": nuevo_id}), 201
 
 @app.route("/api/usuarios/<int:id>", methods=["PUT"])
 def actualizar(id):
