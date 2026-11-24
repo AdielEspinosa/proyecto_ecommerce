@@ -12,25 +12,78 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <a class="brand" href="#overview" aria-label="Pizza Express inicio">
+  <!-- =========================
+       ACCESO: LOGIN Y REGISTRO
+       ========================= -->
+  <section class="auth-screen" id="authScreen" hidden>
+    <div class="auth-hero">
+      <a class="brand" href="#" aria-label="Pizza Express">
         <span class="brand-mark"><img src="imagenes/logo.jpg" alt=""></span>
-        <span><strong>Pizza<span>Express</span></strong><small>Centro de operaciones</small></span>
+        <span><strong>Pizza<span>Express</span></strong><small>Pedidos en línea</small></span>
+      </a>
+      <div>
+        <span class="hero-chip"><span class="tiny-dot"></span> RECIÉN SALIDA DEL HORNO</span>
+        <h1>Tu pizza favorita,<br><em>a un clic.</em></h1>
+        <p>Inicia sesión para pedir y pagar tus pizzas. El equipo de Pizza Express gestiona pedidos y pagos desde el mismo lugar.</p>
+      </div>
+      <img class="auth-photo" src="imagenes/pizzaexpress.png" alt="Pizza de pepperoni recién horneada">
+    </div>
+    <div class="auth-panel">
+      <div class="auth-card">
+        <p class="eyebrow">BIENVENIDO</p>
+        <h2 id="authTitle">Inicia sesión</h2>
+        <p class="subtitle" id="authSubtitle">Ingresa con tu nombre de usuario y contraseña.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Acceso">
+          <button type="button" class="auth-tab active" role="tab" aria-selected="true" data-auth-tab="login">Iniciar sesión</button>
+          <button type="button" class="auth-tab" role="tab" aria-selected="false" data-auth-tab="registro">Crear cuenta</button>
+        </div>
+
+        <form id="loginForm" class="auth-form" autocomplete="on">
+          <div class="field"><label for="loginUser">Nombre de usuario</label><input id="loginUser" name="nombre_usuario" required autocomplete="username" placeholder="Ej. laura.gomez"></div>
+          <div class="field"><label for="loginPass">Contraseña</label><input id="loginPass" name="password" type="password" required autocomplete="current-password" placeholder="Tu contraseña"></div>
+          <div class="form-error" id="loginError" role="alert"></div>
+          <button type="submit" class="button button-primary auth-submit" id="loginSubmit">Ingresar</button>
+        </form>
+
+        <form id="registerForm" class="auth-form" hidden>
+          <div class="modal-fields">
+            <div class="field"><label for="regNombre">Nombre</label><input id="regNombre" name="nombre" required placeholder="Ej. Laura"></div>
+            <div class="field"><label for="regApellidos">Apellidos</label><input id="regApellidos" name="apellidos" required placeholder="Ej. Gómez Rodríguez"></div>
+            <div class="field"><label for="regCorreo">Correo electrónico</label><input id="regCorreo" name="correo" type="email" required placeholder="nombre@correo.com"></div>
+            <div class="field"><label for="regTelefono">Teléfono</label><input id="regTelefono" name="telefono" placeholder="300 000 0000"></div>
+            <div class="field full"><label for="regDireccion">Dirección de entrega</label><input id="regDireccion" name="direccion" required placeholder="Calle, carrera, número…"></div>
+            <div class="field"><label for="regUsuario">Nombre de usuario</label><input id="regUsuario" name="nombre_usuario" required autocomplete="username" placeholder="Ej. laura.gomez"></div>
+            <div class="field"><label for="regPassword">Contraseña</label><input id="regPassword" name="password" type="password" required autocomplete="new-password" placeholder="Crea una contraseña"></div>
+          </div>
+          <div class="form-error" id="registerError" role="alert"></div>
+          <button type="submit" class="button button-primary auth-submit" id="registerSubmit">Crear cuenta</button>
+          <p class="auth-note">Las cuentas creadas aquí quedan con rol cliente.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Pizza Express inicio">
+        <span class="brand-mark"><img src="imagenes/logo.jpg" alt=""></span>
+        <span><strong>Pizza<span>Express</span></strong><small id="brandSubtitle">Centro de operaciones</small></span>
       </a>
       <div class="side-label">ESPACIO DE TRABAJO</div>
       <nav class="side-nav" aria-label="Navegación principal">
         <a class="nav-link active" href="#overview" data-page="overview"><span class="nav-icon">⌂</span>Resumen</a>
+        <a class="nav-link" href="#catalogo" data-page="catalogo"><span class="nav-icon">◉</span>Catálogo</a>
         <a class="nav-link" href="#usuarios" data-page="usuarios"><span class="nav-icon">♙</span>Usuarios <span class="nav-count" id="usersNavCount">—</span></a>
         <a class="nav-link" href="#productos" data-page="productos"><span class="nav-icon">▦</span>Productos <span class="nav-count" id="productsNavCount">—</span></a>
-        <a class="nav-link" href="#pedidos" data-page="pedidos"><span class="nav-icon">▤</span>Pedidos <span class="nav-count" id="ordersNavCount">—</span></a>
+        <a class="nav-link" href="#pedidos" data-page="pedidos"><span class="nav-icon">▤</span><span id="ordersNavLabel">Pedidos</span> <span class="nav-count" id="ordersNavCount">—</span></a>
+        <a class="nav-link" href="#pagos" data-page="pagos"><span class="nav-icon">◈</span><span id="paymentsNavLabel">Pagos</span> <span class="nav-count" id="paymentsNavCount">—</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="connection-card">
           <span class="pulse-dot"></span>
           <div><strong>Estado de plataforma</strong><small id="platformStatus">Comprobando servicios…</small></div>
         </div>
-        <div class="sidebar-foot">PIZZA EXPRESS <span>·</span> ADMIN</div>
+        <div class="sidebar-foot">PIZZA EXPRESS <span>·</span> <b id="sidebarRole">ADMIN</b></div>
       </div>
     </aside>
 
@@ -40,7 +93,8 @@
         <div class="top-actions">
           <span class="today-label" id="todayLabel"></span>
           <button class="icon-button" id="refreshAll" title="Actualizar datos" aria-label="Actualizar datos">↻</button>
-          <div class="avatar">PE</div>
+          <div class="user-chip"><div class="avatar" id="userAvatar">PE</div><span class="user-chip-text"><b id="userName">—</b><small id="userRole">—</small></span></div>
+          <button class="button button-outline logout-button" id="logoutButton" title="Cerrar sesión">Salir</button>
         </div>
       </header>
 
@@ -50,7 +104,7 @@
           <button class="button button-primary" data-go="pedidos"><span>＋</span> Gestionar pedidos</button>
         </div>
         <div class="hero-banner">
-          <div class="hero-copy"><span class="hero-chip"><span class="tiny-dot"></span> OPERACIÓN EN TIEMPO REAL</span><h2>Tu negocio,<br><em>en marcha.</em></h2><p>Controla el catálogo, los clientes y cada pedido desde un panel centralizado.</p><button class="button button-light" data-go="productos">Explorar productos <span>↗</span></button></div>
+          <div class="hero-copy"><span class="hero-chip"><span class="tiny-dot"></span> OPERACIÓN EN TIEMPO REAL</span><h2>Tu negocio,<br><em>en marcha.</em></h2><p>Controla el catálogo, los clientes, los pedidos y los pagos desde un panel centralizado.</p><button class="button button-light" data-go="productos">Explorar productos <span>↗</span></button></div>
           <div class="hero-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-pizza">🍕</div><div class="float-card float-card-top"><span class="float-icon">✦</span><span><b>Pizza Express</b><small>Gestión simplificada</small></span></div><div class="float-card float-card-bottom"><span class="success-mark">✓</span><span><b>Todo conectado</b><small id="heroHealth">Consultando APIs…</small></span></div></div>
         </div>
         <div class="section-heading"><div><p class="eyebrow">VISTA GENERAL</p><h2>Resumen de operación</h2></div><span class="last-update" id="lastUpdated">Sin actualizar</span></div>
@@ -58,27 +112,35 @@
           <article class="metric-card"><div class="metric-top"><span class="metric-icon orange">▦</span><span class="metric-status" id="productsHealth">Consultando</span></div><p>Productos registrados</p><div class="metric-value" id="productsMetric">—</div><div class="metric-foot"><span class="metric-bullet orange-bg"></span><span id="productsFoot">Conectando al servicio</span></div></article>
           <article class="metric-card"><div class="metric-top"><span class="metric-icon purple">♙</span><span class="metric-status" id="usersHealth">Consultando</span></div><p>Usuarios registrados</p><div class="metric-value" id="usersMetric">—</div><div class="metric-foot"><span class="metric-bullet purple-bg"></span><span id="usersFoot">Conectando al servicio</span></div></article>
           <article class="metric-card"><div class="metric-top"><span class="metric-icon green">▤</span><span class="metric-status" id="ordersHealth">Consultando</span></div><p>Pedidos registrados</p><div class="metric-value" id="ordersMetric">—</div><div class="metric-foot"><span class="metric-bullet green-bg"></span><span id="ordersFoot">Conectando al servicio</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-icon blue">⌁</span><span class="metric-status" id="servicesHealth">Comprobando</span></div><p>Servicios disponibles</p><div class="metric-value"><span id="servicesMetric">—</span><small> / 3</small></div><div class="metric-foot"><span class="metric-bullet blue-bg"></span><span>Usuarios · Productos · Pedidos</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-icon blue">⌁</span><span class="metric-status" id="servicesHealth">Comprobando</span></div><p>Servicios disponibles</p><div class="metric-value"><span id="servicesMetric">—</span><small> / <span id="servicesTotal">5</span></small></div><div class="metric-foot"><span class="metric-bullet blue-bg"></span><span>Los 5 microservicios vía API Gateway</span></div></article>
         </div>
         <div class="overview-grid">
           <article class="panel-card service-panel"><div class="panel-heading"><div><h3>Estado de los servicios</h3><p>Disponibilidad de las APIs conectadas</p></div><button class="text-button" id="checkServices">Comprobar ↻</button></div>
             <div class="service-list">
               <button class="service-row" data-go="usuarios"><span class="service-symbol purple">♙</span><span class="service-info"><b>Usuarios</b><small>Clientes y perfiles</small></span><span class="service-state" id="serviceUsers"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
+              <button class="service-row" data-go="usuarios"><span class="service-symbol blue">⚿</span><span class="service-info"><b>Autenticación</b><small>Registro e inicio de sesión</small></span><span class="service-state" id="serviceAuth"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
               <button class="service-row" data-go="productos"><span class="service-symbol orange">▦</span><span class="service-info"><b>Productos</b><small>Catálogo y disponibilidad</small></span><span class="service-state" id="serviceProducts"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
               <button class="service-row" data-go="pedidos"><span class="service-symbol green">▤</span><span class="service-info"><b>Pedidos</b><small>Historial y estados</small></span><span class="service-state" id="serviceOrders"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
+              <button class="service-row" data-go="pagos"><span class="service-symbol orange">◈</span><span class="service-info"><b>Pagos</b><small>Registro y confirmación de pagos</small></span><span class="service-state" id="servicePayments"><i></i> Verificando</span><span class="row-arrow">↗</span></button>
             </div>
           </article>
           <article class="panel-card quick-panel"><div class="panel-heading"><div><h3>Accesos rápidos</h3><p>Continúa con una tarea</p></div></div>
-            <button class="quick-action" data-go="usuarios"><span class="quick-icon purple">＋</span><span><b>Registrar usuario</b><small>Crear un nuevo cliente</small></span><span class="row-arrow">→</span></button>
+            <button class="quick-action" data-go="usuarios"><span class="quick-icon purple">＋</span><span><b>Registrar usuario</b><small>Crear una cuenta con su rol</small></span><span class="row-arrow">→</span></button>
             <button class="quick-action" data-go="productos"><span class="quick-icon orange">＋</span><span><b>Agregar producto</b><small>Ampliar el catálogo</small></span><span class="row-arrow">→</span></button>
             <button class="quick-action" data-go="pedidos"><span class="quick-icon green">＋</span><span><b>Crear pedido</b><small>Registrar una compra</small></span><span class="row-arrow">→</span></button>
+            <button class="quick-action" data-go="pagos"><span class="quick-icon blue">✓</span><span><b>Confirmar pagos</b><small>Aprobar o rechazar pagos pendientes</small></span><span class="row-arrow">→</span></button>
           </article>
         </div>
         <article class="panel-card recent-panel"><div class="panel-heading"><div><h3>Pedidos recientes</h3><p>Últimos pedidos reportados por el servicio</p></div><button class="text-button" data-go="pedidos">Ver todos →</button></div><div id="recentOrders" class="recent-orders"><div class="empty-state">Cargando pedidos recientes…</div></div></article>
       </section>
 
+      <section class="page-view" id="page-catalogo">
+        <div class="page-title-row"><div><p class="eyebrow">NUESTRO MENÚ</p><h1>Catálogo</h1><p class="subtitle">Elige tu pizza y el tamaño. El pedido llegará a tu dirección registrada.</p></div><button class="button button-outline" id="refreshCatalog">↻ Actualizar</button></div>
+        <div class="catalog-grid" id="catalogGrid"><div class="empty-state">Cargando catálogo…</div></div>
+      </section>
+
       <section class="page-view" id="page-usuarios">
-        <div class="page-title-row"><div><p class="eyebrow">GESTIÓN DE CLIENTES</p><h1>Usuarios</h1><p class="subtitle">Administra los perfiles y la información de tus clientes.</p></div><button class="button button-primary" id="createUser"><span>＋</span> Nuevo usuario</button></div>
+        <div class="page-title-row"><div><p class="eyebrow">GESTIÓN DE CLIENTES</p><h1>Usuarios</h1><p class="subtitle">Administra los perfiles, las cuentas y los roles del equipo y los clientes.</p></div><button class="button button-primary" id="createUser"><span>＋</span> Nuevo usuario</button></div>
         <div class="metric-strip"><div><span class="strip-icon purple">♙</span><span><small>Total de usuarios</small><b id="userTotal">—</b></span></div><div><span class="strip-icon green">✓</span><span><small>Servicio</small><b id="userServiceStatus">Verificando</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="userLastQuery">—</b></span></div></div>
         <div class="panel-card table-panel"><div class="table-toolbar"><div><h3>Directorio de usuarios</h3><p>Consulta, crea, edita o elimina registros.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="usersSearch" type="search" placeholder="Buscar usuario…"></label><button class="button button-outline" id="refreshUsers">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>USUARIO</th><th>CORREO</th><th>TELÉFONO</th><th>ROL</th><th>DIRECCIÓN</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="usersTable"><tr><td colspan="6" class="table-message">Consultando usuarios…</td></tr></tbody></table></div><div class="table-footer"><span id="usersTableCount">0 registros</span><span>Los datos provienen de la API de usuarios.</span></div></div>
       </section>
@@ -90,11 +152,17 @@
       </section>
 
       <section class="page-view" id="page-pedidos">
-        <div class="page-title-row"><div><p class="eyebrow">VENTAS Y OPERACIÓN</p><h1>Pedidos</h1><p class="subtitle">Consulta el historial y gestiona los estados de cada pedido.</p></div><button class="button button-primary" id="createOrder"><span>＋</span> Nuevo pedido</button></div>
+        <div class="page-title-row"><div><p class="eyebrow" id="ordersEyebrow">VENTAS Y OPERACIÓN</p><h1 id="ordersTitle">Pedidos</h1><p class="subtitle" id="ordersSubtitle">Consulta el historial y gestiona los estados de cada pedido.</p></div><button class="button button-primary" id="createOrder"><span>＋</span> Nuevo pedido</button></div>
         <div class="metric-strip"><div><span class="strip-icon green">▤</span><span><small>Total de pedidos</small><b id="orderTotal">—</b></span></div><div><span class="strip-icon orange">◷</span><span><small>Pendientes</small><b id="orderPending">—</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="orderLastQuery">—</b></span></div></div>
-        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3>Historial de pedidos</h3><p>Actualiza el estado, la dirección o elimina un pedido.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="ordersSearch" type="search" placeholder="Buscar pedido…"></label><button class="button button-outline" id="refreshOrders">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTO</th><th>CANTIDAD</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="ordersTable"><tr><td colspan="8" class="table-message">Consultando pedidos…</td></tr></tbody></table></div><div class="table-footer"><span id="ordersTableCount">0 registros</span><span>Los datos provienen de la API de pedidos.</span></div></div>
+        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3 id="ordersTableTitle">Historial de pedidos</h3><p id="ordersTableSubtitle">Actualiza el estado, la dirección o elimina un pedido.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="ordersSearch" type="search" placeholder="Buscar pedido…"></label><button class="button button-outline" id="refreshOrders">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTO</th><th>CANTIDAD</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="ordersTable"><tr><td colspan="8" class="table-message">Consultando pedidos…</td></tr></tbody></table></div><div class="table-footer"><span id="ordersTableCount">0 registros</span><span>Los datos provienen de la API de pedidos.</span></div></div>
       </section>
-      <footer class="main-footer"><span>© <span id="year"></span> Pizza Express</span><span>Panel de administración <i>·</i> Datos conectados a los servicios</span></footer>
+
+      <section class="page-view" id="page-pagos">
+        <div class="page-title-row"><div><p class="eyebrow" id="paymentsEyebrow">FACTURACIÓN</p><h1 id="paymentsTitle">Pagos</h1><p class="subtitle" id="paymentsSubtitle">Aprueba o rechaza los pagos registrados. Al aprobar, el pedido pasa a preparación.</p></div><button class="button button-primary" id="createPayment"><span>＋</span> Registrar pago</button></div>
+        <div class="metric-strip"><div><span class="strip-icon blue">◈</span><span><small>Total de pagos</small><b id="paymentTotal">—</b></span></div><div><span class="strip-icon orange">◷</span><span><small>Pendientes de confirmación</small><b id="paymentPending">—</b></span></div><div><span class="strip-icon blue">↻</span><span><small>Última consulta</small><b id="paymentLastQuery">—</b></span></div></div>
+        <div class="panel-card table-panel"><div class="table-toolbar"><div><h3 id="paymentsTableTitle">Historial de pagos</h3><p id="paymentsTableSubtitle">Consulta, confirma o elimina pagos.</p></div><div class="table-tools"><label class="search-box"><span>⌕</span><input id="paymentsSearch" type="search" placeholder="Buscar pago…"></label><button class="button button-outline" id="refreshPayments">↻ Actualizar</button></div></div><div class="table-wrap"><table><thead><tr><th>PAGO</th><th>PEDIDO</th><th>MÉTODO</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th><th class="actions-head">ACCIONES</th></tr></thead><tbody id="paymentsTable"><tr><td colspan="7" class="table-message">Consultando pagos…</td></tr></tbody></table></div><div class="table-footer"><span id="paymentsTableCount">0 registros</span><span>Los datos provienen de la API de pagos.</span></div></div>
+      </section>
+      <footer class="main-footer"><span>© <span id="year"></span> Pizza Express</span><span id="footerNote">Panel de administración <i>·</i> Datos conectados a los servicios</span></footer>
     </main>
   </div>
 
