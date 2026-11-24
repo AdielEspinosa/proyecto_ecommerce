@@ -81,17 +81,21 @@ def crear():
         with circuito_pedidos.calling():
             respuesta_pedido = consultar_pedido(datos["pedido_id"])
 
-    except requests.exceptions.ConnectionError:
-        return jsonify({"mensaje": "El servicio de pedidos no está disponible"}), 503
     except pybreaker.CircuitBreakerError:
         return jsonify({"mensaje": "Circuito abierto: El servicio de pedidos no está disponible"}), 503
+
     except requests.exceptions.Timeout:
         return jsonify({"mensaje": "El servicio de pedidos tardó demasiado en responder"}), 504
+
+    except requests.exceptions.ConnectionError:
+        return jsonify({"mensaje": "El servicio de pedidos no está disponible"}), 503
+
     except requests.exceptions.RequestException:
         return jsonify({"mensaje": "Error al consultar el pedido"}), 502
 
     if respuesta_pedido.status_code == 404:
         return jsonify({"mensaje": "Pedido no encontrado"}), 404
+
     if respuesta_pedido.status_code != 200:
         return jsonify({"mensaje": "Error al consultar el pedido"}), 502
 
@@ -128,7 +132,7 @@ def crear():
 
 @app.route("/api/pagos/<int:id>", methods=["PUT"])
 def actualizar(id):
-    datos = request.json
+    datos = request.get_json(silent=True)
 
     if not datos or "estado" not in datos:
         return jsonify({
