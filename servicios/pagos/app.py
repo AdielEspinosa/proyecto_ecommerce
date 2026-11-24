@@ -57,7 +57,7 @@ def buscar(id):
 
 @app.route("/api/pagos", methods=["POST"])
 def crear():
-    datos = request.get_json(silent=True)
+    datos = request.json
 
     if not datos or "pedido_id" not in datos or not datos["pedido_id"]:
         return jsonify({
